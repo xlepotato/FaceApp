@@ -20,6 +20,10 @@ import android.graphics.*;
 import android.widget.*;
 import android.provider.*;
 
+//import required Microsoft Face Libraries
+import com.microsoft.projectoxford.face.*;
+import com.microsoft.projectoxford.face.contract.*;
+
 public class MainActivity extends AppCompatActivity {
 
     private final int PICK_IMAGE = 1;
