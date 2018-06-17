@@ -1,13 +1,5 @@
 package com.example.ying.faceapp;
 
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 
 
 import java.io.*;
@@ -15,6 +7,7 @@ import android.app.*;
 import android.content.*;
 import android.net.*;
 import android.os.*;
+import android.support.v7.app.AppCompatActivity;
 import android.view.*;
 import android.graphics.*;
 import android.widget.*;
@@ -85,5 +78,65 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+
+    }
+
+
+    // Detect faces by uploading face images
+    // Frame faces after detection
+
+    private void detectAndFrame(final Bitmap imageBitmap)
+    {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        ByteArrayInputStream inputStream =
+                new ByteArrayInputStream(outputStream.toByteArray());
+        AsyncTask<InputStream, String, Face[]> detectTask =
+                new AsyncTask<InputStream, String, Face[]>() {
+                    @Override
+                    protected Face[] doInBackground(InputStream... params) {
+                        try {
+                            publishProgress("Detecting...");
+                            Face[] result = faceServiceClient.detect(
+                                    params[0],
+                                    true,         // returnFaceId
+                                    false,        // returnFaceLandmarks
+                                    null           // returnFaceAttributes: a string like "age, gender"
+                /* If you want value of FaceAttributes, try adding 4th argument like below.
+                            new FaceServiceClient.FaceAttributeType[] {
+                    FaceServiceClient.FaceAttributeType.Age,
+                    FaceServiceClient.FaceAttributeType.Gender }
+                */
+                            );
+                            if (result == null)
+                            {
+                                publishProgress("Detection Finished. Nothing detected");
+                                return null;
+                            }
+                            publishProgress(
+                                    String.format("Detection Finished. %d face(s) detected",
+                                            result.length));
+                            return result;
+                        } catch (Exception e) {
+                            publishProgress("Detection failed");
+                            return null;
+                        }
+                    }
+                    @Override
+                    protected void onPreExecute() {
+                        //TODO: show progress dialog
+                    }
+                    @Override
+                    protected void onProgressUpdate(String... progress) {
+                        //TODO: update progress
+                    }
+                    @Override
+                    protected void onPostExecute(Face[] result) {
+                        //TODO: update face frames
+                    }
+                };
+        detectTask.execute(inputStream);
     }
 }
+
+
