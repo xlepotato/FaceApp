@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 ImageView imageView = (ImageView) findViewById(R.id.imageView1);
                 imageView.setImageBitmap(bitmap);
+
+                // This is the new addition.
+                 detectAndFrame(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -124,15 +127,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                     @Override
                     protected void onPreExecute() {
-                        //TODO: show progress dialog
+                        detectionProgressDialog.show();
                     }
                     @Override
                     protected void onProgressUpdate(String... progress) {
-                        //TODO: update progress
+                        detectionProgressDialog.setMessage(progress[0]);
                     }
                     @Override
                     protected void onPostExecute(Face[] result) {
-                        //TODO: update face frames
+//                        frame faces and report status.
+                        detectionProgressDialog.dismiss();
+                        if (result == null) return;
+                        ImageView imageView = (ImageView)findViewById(R.id.imageView1);
+                        imageView.setImageBitmap(drawFaceRectanglesOnBitmap(imageBitmap, result));
+                        imageBitmap.recycle();
                     }
                 };
         detectTask.execute(inputStream);
