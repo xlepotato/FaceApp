@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     private final int PICK_IMAGE = 1;
     private ProgressDialog detectionProgressDialog;
+    //insert API endpoint here
+    private FaceServiceClient faceServiceClient = new FaceServiceRestClient(" https://eastus2.api.cognitive.microsoft.com/face/v1.0", "f697d347019b4c74976466006f62d811");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
